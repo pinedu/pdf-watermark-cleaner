@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>净页 · PDF 去水印</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">净</span><span>净页</span></a>
+    <span class="brand-sub">PDF WATERMARK CLEANER</span>
+    <div class="privacy"><span class="dot"></span>本机处理 · 文件不外传</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">PDF CLEANUP STUDIO</p>
+      <h1>把水印擦掉，<em>把内容留下。</em></h1>
+      <p class="lead">适用于扫描件、页眉页脚、二维码、印章旁标记等常见场景。自动检测负责提速，手动框选确保可控。</p>
+    </section>
+
+    <section id="uploadCard" class="upload-card">
+      <div id="dropzone" class="dropzone">
+        <div class="upload-icon">PDF</div>
+        <h2>拖入一份 PDF</h2>
+        <p>或点击选择文件 · 最大 200MB · 不支持加密文件</p>
+        <input id="fileInput" type="file" accept="application/pdf,.pdf" hidden>
+        <button id="chooseBtn" class="button primary">选择 PDF</button>
+      </div>
+      <div id="uploadProgress" class="progress hidden"><span></span></div>
+    </section>
+
+    <section id="studio" class="studio hidden">
+      <aside class="sidebar">
+        <div class="file-meta">
+          <span class="file-tag">当前文件</span>
+          <strong id="fileName">—</strong>
+          <small id="fileInfo">—</small>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title"><span>01</span>选取水印</div>
+          <button id="detectBtn" class="button secondary wide">自动检测重复水印</button>
+          <p class="hint">自动检测结果会作为全局区域。手动框选可选择仅当前页或全部页面。</p>
+          <div class="mode-switch">
+            <button id="pageModeBtn" class="mode active">仅当前页</button>
+            <button id="globalModeBtn" class="mode">全部页面</button>
+          </div>
+          <div class="tool-row">
+            <button id="undoBtn" class="tool">撤销</button>
+            <button id="clearPageBtn" class="tool danger">清空本页</button>
+            <button id="clearAllBtn" class="tool danger">全部清空</button>
+          </div>
+          <div class="copy-tools">
+            <button id="copyNextBtn" class="tool">复制本页区域到下一页</button>
+            <div><input id="copyPages" placeholder="页码：2-5,8"><button id="copyPagesBtn">复制</button></div>
+          </div>
+          <div id="regionList" class="region-list"><span>尚未选择区域</span></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title"><span>02</span>处理方式</div>
+          <label class="radio"><input type="radio" name="method" value="edge" checked><i></i><b>边缘取色填充</b><small>适合纸张、纯色背景</small></label>
+          <label class="radio"><input type="radio" name="method" value="white"><i></i><b>白色覆盖</b><small>速度最快，适合白底文档</small></label>
+          <label class="radio"><input type="radio" name="method" value="blur"><i></i><b>强模糊</b><small>适合复杂背景，不保证无痕</small></label>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title"><span>03</span>全局区域范围</div>
+          <select id="scope">
+            <option value="all">全局区域应用到全部页面</option>
+            <option value="first">全局区域仅应用第一页</option>
+            <option value="selected">全局区域仅应用当前页</option>
+          </select>
+          <label class="range-label">输出清晰度 <b id="dpiValue">180 DPI</b></label>
+          <input id="dpi" type="range" min="96" max="300" value="180" step="12">
+        </div>
+
+        <button id="processBtn" class="button primary wide process">生成去水印 PDF</button>
+        <button id="newBtn" class="text-button">换一个文件</button>
+      </aside>
+
+      <section class="workspace">
+        <div class="workspace-bar">
+          <div><b>页面预览</b><span>拖拽红框选择水印区域</span></div>
+          <div class="pager"><button id="prevBtn">←</button><span id="pageLabel">1 / 1</span><button id="nextBtn">→</button></div>
+        </div>
+        <div id="canvasWrap" class="canvas-wrap">
+          <div id="paper" class="paper">
+            <img id="pageImage" alt="PDF 页面预览">
+            <canvas id="overlay"></canvas>
+          </div>
+          <div id="emptyPreview" class="empty-preview">正在准备预览…</div>
+        </div>
+        <div id="thumbs" class="thumbs"></div>
+      </section>
+    </section>
+
+    <section id="result" class="result hidden">
+      <div class="success-mark">✓</div>
+      <p class="eyebrow">PROCESS COMPLETE</p>
+      <h2>处理完成</h2>
+      <p id="resultName"></p>
+      <button id="downloadBtn" class="button primary">保存 PDF 到电脑</button>
+      <button id="openFolderBtn" class="button secondary hidden">打开所在文件夹</button>
+      <button id="againBtn" class="button secondary">继续处理</button>
+      <p id="savedPath" class="saved-path hidden"></p>
+    </section>
+
+    <section class="features">
+      <article><span>01</span><h3>自动 + 手动</h3><p>识别多页重复区域，也允许精确框选，避免误伤正文。</p></article>
+      <article><span>02</span><h3>全程本机</h3><p>服务仅监听 127.0.0.1，文档留在你的电脑中。</p></article>
+      <article><span>03</span><h3>批量页面</h3><p>一套区域可应用到全部页面，适合统一页眉、页脚与角标。</p></article>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
